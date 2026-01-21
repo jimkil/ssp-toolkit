@@ -34,6 +34,15 @@ wheels = [
 ]
 
 [[package]]
+name = "blinker"
+version = "1.9.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/21/28/9b3f50ce0e048515135495f198351908d99540d69bfdc8c1d15b73dc55ce/blinker-1.9.0.tar.gz", hash = "sha256:b4ce2265a7abece45e7cc896e98dbebe6cead56bcf805a3d23136d145f5445bf", size = 22460, upload-time = "2024-11-08T17:25:47.436Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/10/cb/f2ad4230dc2eb1a74edf38f1a38b9b52277f75bef262d8908e60d957e13c/blinker-1.9.0-py3-none-any.whl", hash = "sha256:ba0efaa9080b619ff2f3459d1d500c57bddea4a6b424b60a91141db6fd2f08bc", size = 8458, upload-time = "2024-11-08T17:25:46.184Z" },
+]
+
+[[package]]
 name = "cfgv"
 version = "3.5.0"
 source = { registry = "https://pypi.org/simple" }
@@ -128,6 +137,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/9b/af/fbfe3c4b5a657d79e5c47a2827a362f9e1b763336a52f926126aa6dc7123/flake8-7.3.0.tar.gz", hash = "sha256:fe044858146b9fc69b551a4b490d69cf960fcb78ad1edcb84e7fbb1b4a8e3872", size = 48326, upload-time = "2025-06-20T19:31:35.838Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9f/56/13ab06b4f93ca7cac71078fbe37fcea175d3216f31f85c3168a6bbd0bb9a/flake8-7.3.0-py2.py3-none-any.whl", hash = "sha256:b9696257b9ce8beb888cdbe31cf885c90d31928fe202be0889a7cdafad32f01e", size = 57922, upload-time = "2025-06-20T19:31:34.425Z" },
+]
+
+[[package]]
+name = "fpyutils"
+version = "4.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/1b/31/9441a8aa548a65d852a12c67036796691b5a90ca49ab09e4437759d9b91f/fpyutils-4.0.1.tar.gz", hash = "sha256:5ee8448b09863d5905ad22cf5f6c8af79d3b314617ac8fbded48eb2a414988e6", size = 21898, upload-time = "2023-11-08T22:06:45.319Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5f/ba/4a0aa00af38dde32e9b575052217b1e8d34e31106a079a74d83caafc26af/fpyutils-4.0.1-py3-none-any.whl", hash = "sha256:006cfbdbd87915d8a1c5b7062b6c8d2f4f9fd12c3e707d89c27e6abd6c67c6b2", size = 24073, upload-time = "2023-11-08T22:06:43.777Z" },
 ]
 
 [[package]]
@@ -258,6 +276,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e7/ff/0ffefdcac38932a54d2b5eed4e0ba8a408f215002cd178ad1df0f2806ff8/mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325", size = 9658, upload-time = "2022-01-24T01:14:51.113Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/27/1a/1f68f9ba0c207934b35b86a8ca3aad8395a3d6dd7921c0686e23853ff5a9/mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e", size = 7350, upload-time = "2022-01-24T01:14:49.62Z" },
+]
+
+[[package]]
+name = "md-toc"
+version = "9.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "fpyutils" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b5/45/3ad7b820f46daa3c0b95bb972d8962a136e452d19eea07125df958cf9055/md_toc-9.0.0.tar.gz", hash = "sha256:a4e73b59f71c20b94c8c16bc6ef3bc2e80d1d40c398050101f80c3567fda7271", size = 65352, upload-time = "2024-04-10T22:12:39.052Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c1/0d/4b3202d4236da63d9b6b894ab7ecdbc6f6dad6e87a4970d7a22d2b315b97/md_toc-9.0.0-py3-none-any.whl", hash = "sha256:dfd57de2faf252be1d6faf9bed7eab506e1caa7c4486ab6d6d04556426d5a7a5", size = 78101, upload-time = "2024-04-10T22:12:36.754Z" },
 ]
 
 [[package]]
@@ -538,18 +568,27 @@ wheels = [
 ]
 
 [[package]]
+name = "slugify"
+version = "0.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/7b/89/fbb7391d777b60c82d4e1376bb181b98e75adf506b3f7ffe837eca64570b/slugify-0.0.1.tar.gz", hash = "sha256:c5703cc11c1a6947536f3ce8bb306766b8bb5a84a53717f5a703ce0f18235e4c", size = 1156, upload-time = "2010-12-07T16:36:05.53Z" }
+
+[[package]]
 name = "ssp-toolkit"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
+    { name = "blinker" },
     { name = "click" },
     { name = "jinja2" },
     { name = "loguru" },
     { name = "markdown" },
+    { name = "md-toc" },
     { name = "pydantic" },
     { name = "pypandoc" },
     { name = "python-dotenv" },
     { name = "rtyaml" },
+    { name = "slugify" },
 ]
 
 [package.optional-dependencies]
@@ -566,12 +605,14 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "black", marker = "extra == 'dev'", specifier = ">=24.11.0" },
+    { name = "blinker", specifier = ">=1.9.0" },
     { name = "click", specifier = ">=8.3.1" },
     { name = "flake8", marker = "extra == 'dev'", specifier = ">=6.1.0" },
     { name = "isort", marker = "extra == 'dev'", specifier = ">=6.0.0" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "markdown", specifier = ">=3.10" },
+    { name = "md-toc", specifier = ">=9.0.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.5.1" },
     { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=3.4.0" },
     { name = "pydantic", specifier = ">=2.12.5" },
@@ -580,6 +621,7 @@ requires-dist = [
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "python-dotenv", specifier = ">=1.2.1" },
     { name = "rtyaml", specifier = ">=1.0.0" },
+    { name = "slugify", specifier = ">=0.0.1" },
 ]
 provides-extras = ["dev"]
 

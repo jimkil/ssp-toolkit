@@ -1,7 +1,6 @@
 """
-Copyright 2019-2024 CivicActions, Inc. See the README file at the top-level
-directory of this distribution and at https://github.com/CivicActions/ssp-toolkit#license.
-
+Copyright 2019-2025 CivicActions, Inc. See the README file at the top-level
+directory of this distribution and at https://github.com/CivicActions/ssp-flask#license.
 
 Example tool to render a template using data loaded from a YAML
 file.  One intended use case: load an OSCAL style YAML file and render
@@ -21,73 +20,7 @@ TODO
 import datetime
 import os
 
-import click
 import jinja2
-from yaml import FullLoader, load
-
-
-@click.command()
-@click.option(
-    "--in",
-    "-i",
-    "in_",
-    required=True,
-    type=click.Path(exists=True, dir_okay=False, readable=True),
-    help="values (YAML)",
-)
-@click.option(
-    "--template",
-    "-t",
-    "template_path",
-    type=click.Path(exists=True, dir_okay=False, readable=True),
-    required=True,
-    help="Template (Jinja2)",
-)
-@click.option(
-    "--root",
-    "-R",
-    help="If supplied, names a Jinja2 variable that will hold all the top-level "
-    "YAML values.",
-)
-@click.option(
-    "--set",
-    "-s",
-    "set_",
-    nargs=2,
-    multiple=True,
-    help="Set a value.  E.g., -s var value",
-)
-@click.option(
-    "--output",
-    "-o",
-    "output_file",
-    type=click.Path(exists=False, allow_dash=True),
-    default="-",
-    help="Output file (or - for stdout)",
-)
-@click.option(
-    "--output-dir",
-    "-O",
-    "output_dir",
-    type=click.Path(exists=True, file_okay=False, dir_okay=True),
-    help="Default output directory",
-)
-def main(
-    in_: str,
-    template_path: str,
-    root: str,
-    set_: dict,
-    output_file: str,
-    output_dir: str,
-):
-
-    with open(in_, "r") as stream:
-        yaml = load(stream, Loader=FullLoader)
-
-    template_args = get_template_args(yaml=yaml, set_=set_, root=root)
-    output_path = make_output_path(output_file=output_file, output_dir=output_dir)
-
-    secrender(template_path, template_args, output_path)
 
 
 def secrender(template_path: str, template_args: dict, output_path: str):
@@ -144,7 +77,3 @@ def get_template_args(yaml: dict, set_: dict, root: str = "") -> dict:
     template_args["current_date"] = datetime.datetime.today()
 
     return template_args
-
-
-if __name__ == "__main__":
-    main()

@@ -9,10 +9,10 @@ from pathlib import Path
 
 import md_toc
 import yaml
-from complianceio.opencontrol import OpenControl
 
 from tools.helpers import secrender
 from tools.helpers.config import Config
+from tools.helpers.opencontrol import OpenControl
 
 config = Config()
 
