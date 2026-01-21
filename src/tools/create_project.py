@@ -117,7 +117,7 @@ def create_opencontrol_file(project_name: str, projects_directory: Path) -> None
     "--directory",
     "-d",
     "projects_directory",
-    required=False,
+    required=True,
     default=".",
     help="Directory to create the new project in (default: current directory)",
 )
