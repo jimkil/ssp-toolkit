@@ -7,7 +7,10 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Dict, List
 
+from loguru import logger
 from pydantic import BaseModel
+
+from tools.logging_config import setup_logging  # noqa: F401
 
 
 def sort_by_keys(to_sort: dict) -> OrderedDict:
@@ -84,4 +87,5 @@ class Family(BaseModel):
         with open(output, "w+") as ofp:
             ofp.write(content)
 
+        logger.info(f"writing file {output.as_posix()}")
         print(f"writing file {output.as_posix()}")

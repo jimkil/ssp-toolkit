@@ -7,7 +7,7 @@ this tool generates Standard Operating Procedure (SOP) policy markdown files.
 """
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from io import StringIO
 from pathlib import Path
@@ -15,12 +15,10 @@ from pathlib import Path
 import click
 from loguru import logger
 
-from tools.helpers.hash_checker.hash_checker import FileChecker
+from tools.helpers.hash_checker import FileChecker
 from tools.helpers.helpers import get_project_path, load_yaml_files, write_files
 from tools.helpers.ssptoolkit import load_template_args, write_toc
 from tools.logging_config import setup_logging  # noqa: F401
-
-hashes = FileChecker()
 
 
 @dataclass
@@ -30,13 +28,13 @@ class SopWriter:
     controls: dict
     config: dict
     title: str
+    output_file: StringIO = field(default_factory=StringIO)
 
     def create_file(self):
         """
-        Create a file stream to be used to be written to the markdown files.
+        Create a file stream to be used to be written to the Markdown files.
         """
         try:
-            self.output_file = StringIO()
             self.__add_header()
             self.__add_purpose()
             self.__add_scope()
@@ -108,11 +106,12 @@ class SopWriter:
                 self.output_file.write(f"**{part}.**\t{prose}\n")
 
 
-def aggregate_control_data(component_dir: Path) -> dict:
+def aggregate_control_data(component_dir: Path, hashes: FileChecker) -> dict:
     """
     Collect all the rendered Components YAML files and aggregate them by family.
 
     :param component_dir: a pathlib object file path object.
+    :param hashes: a FileChecker object to track file changes.
     :return: a dictionary with all the Controls sorted by Family.
     """
     families: dict = {}
@@ -231,13 +230,14 @@ def sort_controls(families: dict) -> dict:
 
 @click.command("sop")
 def sop_cmd():
+    hashes = FileChecker()
     project_path = get_project_path()
     out_dir = project_path / "rendered" / "sop"
     config = load_template_args()
 
     rendered_components = project_path / "rendered" / "components"
 
-    families = aggregate_control_data(rendered_components)
+    families = aggregate_control_data(component_dir=rendered_components, hashes=hashes)
 
     create_family_files(families, out_dir, config)
     hashes.write_changes()

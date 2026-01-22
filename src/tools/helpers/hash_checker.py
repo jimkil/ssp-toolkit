@@ -3,17 +3,23 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
+from loguru import logger
+
+from tools.helpers.helpers import get_project_path
+from tools.logging_config import setup_logging  # noqa: F401
+
 BUF_SIZE = 65536
 
 
 class FileChecker:
     hashes: dict[str, str] = defaultdict(lambda: "")
     sha_hash = hashlib.sha256()
-    hash_file: Path = Path("file_hashes").with_suffix(".json")
     changed_files: int = 0
 
     def __init__(self):
-        if not Path(self.hash_file).exists():
+        project_path = get_project_path()
+        self.hash_file: Path = project_path / "file_hashes.json"
+        if not self.hash_file.exists():
             Path(self.hash_file).touch()
         with open(self.hash_file, "r+", encoding="utf-8") as f:
             try:
@@ -45,6 +51,7 @@ class FileChecker:
 
     # Write the hashes to the hash_file.json
     def write_changes(self) -> None:
-        print(f"Updating file hashes in {self.hash_file.as_posix()}")
         with open(self.hash_file, "w+", encoding="utf-8") as f:
             json.dump(self.hashes, f, indent=2)
+        logger.info(f"Updating file hashes in {self.hash_file.as_posix()}")
+        print(f"Updating file hashes in {self.hash_file.as_posix()}")
