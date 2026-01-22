@@ -78,6 +78,25 @@ def update_project_files(project_name: str, project_directory: Path) -> None:
     logger.info(f"Updated configuration.yaml in {configuration_path.resolve()}")
 
 
+def check_new_project_location(new_project_directory: Path) -> None:
+    """
+    Check if the new project directory already exists.
+
+    :param new_project_directory: the directory path
+    :return: True if the directory does not exist, False otherwise
+    """
+
+    current_project_root = Path(__file__).parent.parent.parent.resolve()
+    new_project_dir_resolved = new_project_directory.resolve()
+    if str(new_project_dir_resolved).startswith(str(current_project_root)):
+        logger.error(
+            f"Attempted to create project inside Toolkit directory: {new_project_dir_resolved}"
+        )
+        raise ValueError(
+            f"New project directory cannot be inside the Toolkit directory: {new_project_dir_resolved}."
+        )
+
+
 @click.command("create-project")
 @click.option(
     "--name",
@@ -99,6 +118,7 @@ def create_project_cmd(project_name: str, projects_directory: str) -> None:
     Create a new project directory with the given name.
     """
     project_path = Path(projects_directory) / project_name.replace(" ", "_").lower()
+    check_new_project_location(new_project_directory=project_path)
     copy_project_files(new_project_directory=project_path)
     update_project_files(project_name=project_name, project_directory=project_path)
 
