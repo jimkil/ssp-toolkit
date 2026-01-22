@@ -15,8 +15,6 @@ from tools.helpers.helpers import get_project_path
 from tools.helpers.project import Project
 from tools.logging_config import setup_logging  # noqa: F401
 
-project = Project()
-
 
 def get_control_parts(parts: list, control, parent: str) -> Control:
     for p in parts:
@@ -32,7 +30,7 @@ def get_control_parts(parts: list, control, parent: str) -> Control:
     return control
 
 
-def get_controls(family: Family, standards: list) -> Family:
+def get_controls(family: Family, standards: list, project: Project) -> Family:
     component_name = (
         f"{family.family_id}-{family.family_name.replace(' ', '_').upper()}"
     )
@@ -113,7 +111,9 @@ def create_toc(out_path: str | Path, controls: dict):
     print(f"TOC written to {toc_file.as_posix()}")
 
 
-def create_family(controls_dir: Path, return_data: bool = False) -> dict:
+def create_family(
+    controls_dir: Path, project: Project, return_data: bool = False
+) -> dict:
 
     title, standards = project.get_standards()
     families = ssptoolkit.get_component_files(project.project.get_components())
@@ -130,6 +130,7 @@ def create_family(controls_dir: Path, return_data: bool = False) -> dict:
                 controls={},
             ),
             standards=standards,
+            project=project,
         )
         if return_data:
             families_data[key] = family
@@ -149,11 +150,12 @@ def create_family(controls_dir: Path, return_data: bool = False) -> dict:
 
 @click.command("make-families")
 def make_families_cmd():
+    project = Project()
     project_path = get_project_path()
-    controls_dir = project_path.joinpath("docs/controls")
+    controls_dir = project_path.joinpath("rendered/docs/controls")
     if not controls_dir.exists():
         print(f"Creating output directory {controls_dir.resolve(strict=False)}")
         controls_dir.mkdir(parents=True, exist_ok=False)
-    create_family(controls_dir=controls_dir)
+    create_family(controls_dir=controls_dir, project=project)
     logger.info(f"Families created at {controls_dir.as_posix()}")
     print("Process complete.")

@@ -31,19 +31,10 @@ from tools.logging_config import setup_logging  # noqa: F401
     type=click.Path(exists=False, dir_okay=True, file_okay=False),
     help="Template directory",
 )
-@click.option(
-    "--out",
-    "-o",
-    "output_dir",
-    type=click.Path(exists=False, dir_okay=True, readable=True),
-    default=".",
-    required=False,
-    help="Output directory (default: current directory)",
-)
-def create_files_cmd(templates: str, output_dir: str):
+def create_files_cmd(templates: str):
     project_path = get_project_path()
     template_args = load_template_args()
-    output_to = project_path / output_dir
+    output_to = project_path / "rendered"
     template_dir = project_path / templates
     if not output_to.is_dir():
         output_to.mkdir(parents=True, exist_ok=True)

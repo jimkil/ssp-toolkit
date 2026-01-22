@@ -4,61 +4,21 @@ directory of this distribution and at https://github.com/CivicActions/ssp-toolki
 """
 
 import shutil
-from datetime import datetime
 from pathlib import Path
 
 import click
 from dotenv import set_key
 from loguru import logger
 
-from tools.helpers.helpers import load_yaml_files, write_files, write_yaml_files
+from tools.helpers.helpers import load_yaml_files, write_yaml_files
 from tools.logging_config import setup_logging  # noqa: F401
 
 
-def create_project_dir(project_name: str, projects_directory: str) -> Path:
-    """
-    Create a new project directory with the given name.
-
-    :param project_name: the name of the project
-    :param projects_directory: the base directory to create the project in
-    :return:
-    """
-    project_path = Path(projects_directory) / project_name.replace(" ", "_").lower()
-    try:
-        project_path.mkdir(parents=True, exist_ok=False)
-        click.echo(f"Project '{project_name}' created at {project_path.resolve()}")
-        logger.info(f"Project '{project_name}' created at {project_path.resolve()}")
-    except FileExistsError:
-        click.echo(
-            f"Error: Project '{project_name}' already exists at {project_path.resolve()}"
-        )
-        logger.error(
-            f"Project '{project_name}' already exists at {project_path.resolve()}"
-        )
-
-    set_key(Path.cwd() / ".env", "PROJECT_PATH", str(project_path.resolve()))
-    return project_path
-
-
-def add_readme(project_directory: Path) -> None:
-    """
-    Add initial files to the project directory.
-
-    :param project_directory: the project directory path
-    """
-    readme_path = project_directory / "README.md"
-    now = datetime.now()
-    content = (
-        f"# {project_directory.name}\n\nProject created: {now.isoformat(sep=" ")}\n"
-    )
-    write_files(file_path=readme_path, content=content)
-
-
-def copy_directories(project_directory: Path) -> None:
+def copy_project_files(new_project_directory: Path) -> None:
     """
     Copy all directories from the project_files directory into the project directory.
 
-    :param project_directory: the project directory path
+    :param new_project_directory: the project directory path
     """
     project_files_dir = Path(__file__).parent.parent.parent / "project_files"
     if not project_files_dir.exists() or not project_files_dir.is_dir():
@@ -70,57 +30,52 @@ def copy_directories(project_directory: Path) -> None:
         )
         return
 
-    for item in project_files_dir.iterdir():
-        if item.is_dir():
-            dest_dir = project_directory / item.name
-            try:
-                shutil.copytree(item, dest_dir, dirs_exist_ok=True)
-                click.echo(f"Copied directory '{item.name}' to {dest_dir.resolve()}")
-                logger.info(f"Copied directory '{item.name}' to {dest_dir.resolve()}")
-            except FileExistsError as fee:
-                click.echo(f"Error copying '{item.name}': {fee}")
-                logger.error(f"Error copying '{item.name}': {fee}")
-            except shutil.Error as err:
-                click.echo(f"Error copying '{item.name}': {err}")
-                logger.error(f"Error copying '{item.name}': {err}")
+    try:
+        shutil.copytree(project_files_dir, new_project_directory, dirs_exist_ok=False)
+        click.echo(f"New Project created in {new_project_directory.as_posix()}")
+        logger.info(f"New Project created in {new_project_directory.as_posix()}")
+    except FileExistsError as fee:
+        click.echo(
+            f"""
+PROJECT CREATION ERROR
+----------------------
+Project {new_project_directory.name} already exists.
+Try opening the project using `uv run open-project --directory {new_project_directory.as_posix()}` or
+create a new project with a different name.
+"""
+        )
+        logger.error(f"Project {new_project_directory.name} already exists: {fee}")
+    except shutil.Error as err:
+        click.echo(
+            f"Error creating project in {new_project_directory.as_posix()}: {err}"
+        )
+        logger.error(
+            f"Error creating project in {new_project_directory.as_posix()}: {err}"
+        )
 
 
-def create_opencontrol_file(project_name: str, project_directory: Path) -> None:
+def update_project_files(project_name: str, project_directory: Path) -> None:
     """
     Create a prepopulated opencontrol.yaml file in the project directory.
 
     :param project_name: the name of the project
     :param project_directory: the directory path
     """
-    opencontrol_path = (
-        Path(__file__).parent.parent.parent / "project_files" / "opencontrol.yaml"
-    )
+    opencontrol_path = project_directory / "opencontrol.yaml"
     oc_file = load_yaml_files(file_path=opencontrol_path)
     oc_file["name"] = project_name
-    write_yaml_files(file_path=project_directory / "opencontrol.yaml", content=oc_file)
+    write_yaml_files(file_path=opencontrol_path, content=oc_file)
 
-    click.echo(f"Created opencontrol.yaml in {project_directory.resolve()}")
-    logger.info(f"Created opencontrol.yaml in {project_directory.resolve()}")
+    click.echo(f"Updated opencontrol.yaml in {opencontrol_path.resolve()}")
+    logger.info(f"Updated opencontrol.yaml in {opencontrol_path.resolve()}")
 
+    configuration_path = project_directory / "configuration.yaml"
+    config = load_yaml_files(file_path=configuration_path)
+    config["system_security_plan"]["title"] = project_name
+    write_yaml_files(file_path=configuration_path, content=config)
 
-def copy_config(project_directory: Path) -> None:
-    copy_config_file = (
-        Path(__file__).parent.parent.parent / "project_files" / "configuration.yaml"
-    )
-    try:
-        shutil.copy2(copy_config_file, project_directory / "configuration.yaml")
-        click.echo(
-            f"Copied directory '{copy_config_file.name}' to {project_directory.resolve()}"
-        )
-        logger.info(
-            f"Copied directory '{copy_config_file.name}' to {project_directory.resolve()}"
-        )
-    except FileExistsError as fee:
-        click.echo(f"Error copying '{copy_config_file.name}': {fee}")
-        logger.error(f"Error copying '{copy_config_file.name}': {fee}")
-    except shutil.Error as err:
-        click.echo(f"Error copying '{copy_config_file.name}': {err}")
-        logger.error(f"Error copying '{copy_config_file.name}': {err}")
+    click.echo(f"Updated configuration.yaml in {configuration_path.resolve()}")
+    logger.info(f"Updated configuration.yaml in {configuration_path.resolve()}")
 
 
 @click.command("create-project")
@@ -143,10 +98,8 @@ def create_project_cmd(project_name: str, projects_directory: str) -> None:
     """
     Create a new project directory with the given name.
     """
-    project_dir = create_project_dir(
-        project_name=project_name, projects_directory=projects_directory
-    )
-    add_readme(project_directory=project_dir)
-    copy_directories(project_directory=project_dir)
-    create_opencontrol_file(project_name=project_name, project_directory=project_dir)
-    copy_config(project_directory=project_dir)
+    project_path = Path(projects_directory) / project_name.replace(" ", "_").lower()
+    copy_project_files(new_project_directory=project_path)
+    update_project_files(project_name=project_name, project_directory=project_path)
+
+    set_key(Path.cwd() / ".env", "PROJECT_PATH", str(project_path.resolve()))
