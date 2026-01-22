@@ -28,7 +28,7 @@ from tools.logging_config import setup_logging  # noqa: F401
     "templates",
     required=False,
     default="templates/",
-    type=click.Path(exists=True, dir_okay=True, file_okay=False),
+    type=click.Path(exists=False, dir_okay=True, file_okay=False),
     help="Template directory",
 )
 @click.option(
