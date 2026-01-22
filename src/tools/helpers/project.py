@@ -1,19 +1,21 @@
 from pathlib import Path
 from typing import Generator
 
-from tools.helpers.helpers import load_yaml_files
+from tools.helpers.helpers import get_project_path, load_yaml_files
 from tools.helpers.opencontrol import OpenControl
 from tools.helpers.ssptoolkit import get_project, sortable_control_id
 
 
 class Project:
     project: OpenControl
+    project_path: Path
     config: str
     controls: dict
 
     def __init__(self):
         self.project = get_project()
-        if Path("configuration.yaml").exists():
+        self.project_path = get_project_path()
+        if self.project_path.joinpath("configuration.yaml").exists():
             self.config = "configuration.yaml"
         else:
             raise FileNotFoundError("configuration.yaml not found in project root.")
@@ -22,7 +24,7 @@ class Project:
     def _sort_standard_controls(self):
         controls: dict = {}
         for certification in self.project.certifications:
-            cert_path = Path(certification)
+            cert_path = self.project_path.joinpath(certification)
             cert = load_yaml_files(cert_path)
 
             for control in self._get_certification_controls(cert):
@@ -41,8 +43,9 @@ class Project:
 
     def get_standards(self) -> tuple:
         standards: list = []
+        self.project_path = get_project_path()
         for standard in self.project.standards:
-            standards_list = load_yaml_files(standard)
+            standards_list = load_yaml_files(self.project_path / standard)
             standards.append(standards_list)
 
         title = self.project.metadata.description

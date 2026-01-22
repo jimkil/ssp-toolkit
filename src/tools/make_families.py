@@ -6,12 +6,16 @@ directory of this distribution and at https://github.com/CivicActions/ssp-toolki
 from pathlib import Path
 from typing import Generator
 
+import click
+from loguru import logger
+
 from tools.helpers import ssptoolkit
+from tools.helpers.family import Control, Family, Part
+from tools.helpers.helpers import get_project_path
 from tools.helpers.project import Project
-from tools.makefamilies.family import Control, Family, Part
+from tools.logging_config import setup_logging  # noqa: F401
 
 project = Project()
-controls_dir = Path("docs/controls")
 
 
 def get_control_parts(parts: list, control, parent: str) -> Control:
@@ -43,6 +47,7 @@ def get_controls(family: Family, standards: list) -> Family:
             description=standard.get("description"),
             status=standard.get("implementation_status", "incomplete"),
             parts={},
+            control_type=standard.get("security_control_type", "N/A"),
         )
         if key in component_controls:
             for parent, narrative, status, control_type in get_control_narratives(
@@ -81,6 +86,7 @@ def get_standard_by_control_id(control_id: str, standards: list) -> dict:
     for standard in standards:
         if control_id in standard:
             return standard[control_id]
+    logger.error(f"Standard {control_id} not found")
     raise KeyError(f"{control_id} not found in standards.")
 
 
@@ -103,10 +109,12 @@ def create_toc(out_path: str | Path, controls: dict):
                     .replace(" ", "-")
                 )
                 fp.write(f"\t* [{control}]({url_path}#{anchor})\n")
+    logger.info(f"TOC written to {toc_file.as_posix()}")
     print(f"TOC written to {toc_file.as_posix()}")
 
 
-def create_family(return_data: bool = False) -> dict:
+def create_family(controls_dir: Path, return_data: bool = False) -> dict:
+
     title, standards = project.get_standards()
     families = ssptoolkit.get_component_files(project.project.get_components())
     toc: dict = {}
@@ -139,13 +147,13 @@ def create_family(return_data: bool = False) -> dict:
     return families_data
 
 
-def main():
+@click.command("make-families")
+def make_families_cmd():
+    project_path = get_project_path()
+    controls_dir = project_path.joinpath("docs/controls")
     if not controls_dir.exists():
         print(f"Creating output directory {controls_dir.resolve(strict=False)}")
         controls_dir.mkdir(parents=True, exist_ok=False)
-    create_family()
+    create_family(controls_dir=controls_dir)
+    logger.info(f"Families created at {controls_dir.as_posix()}")
     print("Process complete.")
-
-
-if __name__ == "__main__":
-    main()

@@ -9,11 +9,13 @@ from pathlib import Path
 
 import md_toc
 import yaml
+from loguru import logger
 
 from tools.helpers import secrender
 from tools.helpers.config import Config
-from tools.helpers.helpers import get_project_path
+from tools.helpers.helpers import get_project_path, load_yaml_files
 from tools.helpers.opencontrol import OpenControl
+from tools.logging_config import setup_logging  # noqa: F401
 
 
 class ControlRegExps:
@@ -49,19 +51,19 @@ def get_project() -> OpenControl:
     if oc_file.is_file():
         project = OpenControl.load(oc_file.as_posix())
     else:
-        raise FileNotFoundError("Could not find opencontrol.yaml file.")
+        logger.error(f"OpenControl file not found in {project_path.as_posix()}.")
+        raise FileNotFoundError(
+            "Could not find opencontrol.yaml file in {project_path.as_posix()}."
+        )
     return project
 
 
 def get_certification_baseline() -> list:
     project = get_project()
+    project_path = get_project_path()
     certifications: list = []
     for certs in project.certifications:
-        try:
-            with open(certs, "r") as s:
-                certifications.append(yaml.load(s, Loader=yaml.SafeLoader))
-        except FileNotFoundError as error:
-            raise error
+        certifications.append(load_yaml_files(project_path / certs))
 
     controls: list = []
     for standards in certifications:
@@ -90,23 +92,25 @@ def get_standards_control_data(control: str, standards: list) -> dict:
     for s in standards:
         if control_data := s.get(control):
             return control_data
+    logger.error(f"Control {control} not found.")
     raise KeyError(f"Control {control} not found.")
 
 
 def get_standards_family_name(family: str, standards: list) -> str:
-    for s in standards:
-        if control_data := s.get(family, None):
+    for standard in standards:
+        if control_data := standard.get(family, None):
             return control_data.get("name")
+    logger.error(f"Control {family} not found.")
     raise KeyError(f"Control {family} not found.")
 
 
 def get_component_files(components: list) -> dict:
     component_files: dict = {}
-    for c in components:
-        with open(Path(c).joinpath("component.yaml"), "r") as cfp:
-            component = yaml.load(cfp, Loader=yaml.SafeLoader)
-        for family in component.get("satisfies"):
-            component_file = Path().joinpath(c, family)
+    project_path = get_project_path()
+    for component_file in components:
+        component = load_yaml_files(project_path / component_file / "component.yaml")
+        for family in component.get("satisfies", {}):
+            component_file = project_path.joinpath(component_file, family)
             family_name = component_file.stem
             if family_name not in component_files:
                 component_files[family_name] = []
@@ -116,18 +120,16 @@ def get_component_files(components: list) -> dict:
 
 
 def load_controls_by_id(component_list: list) -> dict:
+    project_path = get_project_path()
     component_files = get_component_files(components=component_list)
     controls: dict = {}
     for _, components in component_files.items():
         for component in components:
             component_path = Path(component)
-            try:
-                with open(component_path, "r") as fp:
-                    component_data = yaml.load(fp, Loader=yaml.SafeLoader)
-            except FileNotFoundError as error:
-                raise error
+            component_data = load_yaml_files(project_path / component_path)
             parent = component_path.parents[0].name
-            for satisfies in component_data.get("satisfies"):
+
+            for satisfies in component_data.get("satisfies", {}):
                 control_id = satisfies.get("control_key")
                 cid = control_id
                 if cid not in controls:
