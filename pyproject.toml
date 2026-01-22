@@ -53,7 +53,7 @@ loadproject = "tools.load_project:load_project_cmd"
 exportto = "src.tools.exportto.exportto:main"
 makefamilies = "tools.makefamilies:make_families_cmd"
 sop = "tools.sop:sop_cmd"
-makessp = "src.tools.makessp.makessp:main"
+makessp = "tools.make_ssp:make_ssp_cmd"
 getconfig = "src.tools.helpers.config:check_config"
 
 [tool.mypy.overrides]
