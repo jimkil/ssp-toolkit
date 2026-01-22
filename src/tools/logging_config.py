@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
+from dotenv import load_dotenv
 from loguru import logger
+
+load_dotenv()
 
 
 def _find_project_root(
@@ -23,7 +27,8 @@ def setup_logging() -> None:
       - <root>/error.log
     """
     root = _find_project_root(Path(__file__).parent)
-    audit_dir = root / "auditlogs"
+    project_path = os.getenv("PROJECT_PATH")
+    audit_dir = Path(project_path) / "auditlogs" if project_path else root / "auditlogs"
     audit_dir.mkdir(parents=True, exist_ok=True)
 
     audit_path = audit_dir / "audit.log"
@@ -47,4 +52,5 @@ def setup_logging() -> None:
         enqueue=True,
         backtrace=True,
         diagnose=True,
+        rotation="5 MB",
     )

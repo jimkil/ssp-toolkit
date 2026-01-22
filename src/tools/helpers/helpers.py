@@ -17,7 +17,7 @@ from tools.logging_config import setup_logging  # noqa: F401
 load_dotenv()
 
 
-def get_project_path() -> Path:
+def get_project_path() -> Path | None:
     project_path_str = os.getenv("PROJECT_PATH")
     if not project_path_str:
         logger.error("PROJECT_PATH environment variable is not set.")
@@ -26,9 +26,8 @@ def get_project_path() -> Path:
     project_path = Path(project_path_str)
     if not project_path.joinpath("opencontrol.yaml").exists():
         logger.error(f"No opencontrol.yaml found in {project_path.as_posix()}.")
-        raise FileNotFoundError(
-            f"No opencontrol.yaml found in {project_path.as_posix()}."
-        )
+        print(f"No opencontrol.yaml found in {project_path.as_posix()}.")
+        return None
 
     return project_path
 
