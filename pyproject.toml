@@ -52,7 +52,7 @@ createproject = "tools.create_project:create_project_cmd"
 loadproject = "tools.load_project:load_project_cmd"
 exportto = "src.tools.exportto.exportto:main"
 makefamilies = "tools.makefamilies:make_families_cmd"
-sop = "src.tools.sop.sop:main"
+sop = "tools.sop:sop_cmd"
 makessp = "src.tools.makessp.makessp:main"
 getconfig = "src.tools.helpers.config:check_config"
 

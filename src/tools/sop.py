@@ -13,9 +13,12 @@ from io import StringIO
 from pathlib import Path
 
 import click
+from loguru import logger
 
 from tools.helpers.hash_checker.hash_checker import FileChecker
-from tools.helpers.ssptoolkit import load_template_args, load_yaml_files, write_toc
+from tools.helpers.helpers import get_project_path, load_yaml_files, write_files
+from tools.helpers.ssptoolkit import load_template_args, write_toc
+from tools.logging_config import setup_logging  # noqa: F401
 
 hashes = FileChecker()
 
@@ -34,10 +37,10 @@ class SopWriter:
         """
         try:
             self.output_file = StringIO()
-            self.__write_header()
-            self.__write_purpose()
-            self.__write_scope()
-            self.__write_controls()
+            self.__add_header()
+            self.__add_purpose()
+            self.__add_scope()
+            self.__add_controls()
             self.__write_file()
         finally:
             self.output_file.close()
@@ -46,12 +49,12 @@ class SopWriter:
         """
         Write the file with the table of contents to the filesystem.
         """
-        print(f"Writing file to {self.filepath}")
-        with open(self.filepath, "w+") as md:
-            print(self.output_file.getvalue(), file=md)
+        write_files(file_path=self.filepath, content=self.output_file.getvalue())
         write_toc(self.filepath, levels=3)
+        logger.info(f"Wrote SOP to: {self.filepath}")
+        print(f"Wrote SOP to: {self.filepath}")
 
-    def __write_header(self):
+    def __add_header(self):
         """
         Add the page header with generation date and TOC placeholder.
         """
@@ -62,27 +65,27 @@ class SopWriter:
         self.output_file.write("\n<!--TOC-->\n\n----\n\n")
         self.output_file.write("## Introduction\n\n")
 
-    def __write_purpose(self):
+    def __add_purpose(self):
         self.output_file.write("### Purpose\n\n")
         self.output_file.write(self.config.get("sop").get(self.family).get("purpose"))
         self.output_file.write("\n\n")
 
-    def __write_scope(self):
+    def __add_scope(self):
         self.output_file.write("### Scope\n\n")
         self.output_file.write(self.config.get("sop").get(self.family).get("scope"))
         self.output_file.write("\n\n")
 
-    def __write_controls(self):
+    def __add_controls(self):
         """
         Write the controls to the file stream.
         """
         self.output_file.write("## Standards\n\n")
         for control_id, control in self.controls.items():
             self.output_file.write(f"### {control_id}\n\n")
-            self.__write_text(control)
-            self.__write_parts(control)
+            self.__add_text(control)
+            self.__add_parts(control)
 
-    def __write_text(self, control: dict):
+    def __add_text(self, control: dict):
         """
         Write the non-parts control narrative text.
 
@@ -93,7 +96,7 @@ class SopWriter:
             prose = "\n\n".join(text)
             self.output_file.write(f"{prose}\n\n")
 
-    def __write_parts(self, control: dict):
+    def __add_parts(self, control: dict):
         """
         Write the control parts narrative text.
 
@@ -174,9 +177,9 @@ def create_sortable_id(control_id: str, control_type: str = "simple") -> str | N
     return control
 
 
-def write_files(families: dict, out_dir: Path, config: dict):
+def create_family_files(families: dict, out_dir: Path, config: dict):
     """
-    Write the Control Family data to markdown files.
+    Write the Control Family data to Markdown files.
 
     :param families: a dictionary of Controls sorted by Control Family.
     :param out_dir: a pathlib file path object where to write the files.
@@ -226,36 +229,17 @@ def sort_controls(families: dict) -> dict:
     return families
 
 
-@click.command()
-@click.option(
-    "--components",
-    "-c",
-    "components_dir",
-    required=False,
-    default="components/",
-    type=click.Path(exists=True, dir_okay=True, file_okay=False),
-    help="Rendered components directory",
-)
-@click.option(
-    "--out",
-    "-o",
-    "output_dir",
-    type=click.Path(exists=False, dir_okay=True, readable=True),
-    default="docs/",
-    help="Output directory (default: docs/)",
-)
-def main(components_dir: str, output_dir: str):
-    out_dir = Path(output_dir).joinpath("sop")
+@click.command("sop")
+def sop_cmd():
+    project_path = get_project_path()
+    out_dir = project_path / "rendered" / "sop"
     config = load_template_args()
 
-    rendered_components = Path(components_dir)
+    rendered_components = project_path / "rendered" / "components"
 
     families = aggregate_control_data(rendered_components)
 
-    write_files(families, out_dir, config)
+    create_family_files(families, out_dir, config)
     hashes.write_changes()
+    logger.info(f"Detected changes in {hashes.changed_files} files.")
     print(f"Detected changes in {hashes.changed_files} files.")
-
-
-if __name__ == "__main__":
-    main()
