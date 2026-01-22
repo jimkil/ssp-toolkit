@@ -50,11 +50,11 @@ createfiles = "tools.create_files:create_files_cmd"
 creatematrix = "src.tools.creatematrix.creatematrix:main"
 createproject = "tools.create_project:create_project_cmd"
 loadproject = "tools.load_project:load_project_cmd"
-exportto = "src.tools.exportto.exportto:main"
+exportto = "tools.export_to:export_to_cmd"
 makefamilies = "tools.makefamilies:make_families_cmd"
 sop = "tools.sop:sop_cmd"
 makessp = "tools.make_ssp:make_ssp_cmd"
-getconfig = "src.tools.helpers.config:check_config"
+getconfig = "tools.helpers.config:check_config"
 
 [tool.mypy.overrides]
 module = "yaml"
