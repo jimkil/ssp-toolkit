@@ -1,3 +1,8 @@
+"""
+Copyright 2019-2026 CivicActions, Inc. See the README file at the top-level
+directory of this distribution and at https://github.com/CivicActions/ssp-toolkit#license.
+"""
+
 from __future__ import annotations
 
 import os

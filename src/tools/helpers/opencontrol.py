@@ -1,5 +1,5 @@
 """
-Copyright 2019-2025 CivicActions, Inc. See the README file at the top-level
+Copyright 2019-2026 CivicActions, Inc. See the README file at the top-level
 directory of this distribution and at https://github.com/CivicActions/ssp-flask#license.
 
 This module provides classes to read, write, and create
