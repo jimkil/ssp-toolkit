@@ -89,8 +89,8 @@ def get_standards() -> tuple:
 
 
 def get_standards_control_data(control: str, standards: list) -> dict:
-    for s in standards:
-        if control_data := s.get(control):
+    for standard in standards:
+        if control_data := standard.get(control):
             return control_data
     logger.error(f"Control {control} not found.")
     raise KeyError(f"Control {control} not found.")
@@ -107,29 +107,28 @@ def get_standards_family_name(family: str, standards: list) -> str:
 def get_component_files(components: list) -> dict:
     component_files: dict = {}
     project_path = get_project_path()
-    for component_file in components:
+    for component_path in components:
         component = load_yaml_files(
-            project_path / "rendered" / component_file / "component.yaml"
+            project_path / "rendered" / component_path / "component.yaml"
         )
         for family in component.get("satisfies", {}):
-            component_file = project_path.joinpath(component_file, family)
-            family_name = component_file.stem
+            component_family = project_path / "rendered" / component_path / family
+            family_name = component_family.stem
             if family_name not in component_files:
                 component_files[family_name] = []
-            component_files[family_name].append(component_file.as_posix())
+            component_files[family_name].append(component_family.as_posix())
 
     return dict(sorted(component_files.items()))
 
 
 def load_controls_by_id(component_list: list) -> dict:
-    project_path = get_project_path()
     component_files = get_component_files(components=component_list)
     controls: dict = {}
     for _, components in component_files.items():
         for component in components:
             component_path = Path(component)
-            component_data = load_yaml_files(project_path / component_path)
-            parent = component_path.parents[0].name
+            component_data = load_yaml_files(component_path)
+            parent = component_path.parent.name
 
             for satisfies in component_data.get("satisfies", {}):
                 control_id = satisfies.get("control_key")

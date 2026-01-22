@@ -6,6 +6,7 @@ directory of this distribution and at https://github.com/CivicActions/ssp-toolki
 import click
 from loguru import logger
 
+from tools.creat_matrix import create_matrix_cmd
 from tools.create_files import create_files_cmd
 from tools.create_project import create_project_cmd
 from tools.export_to import export_to_cmd
@@ -27,6 +28,7 @@ def cli():
 cli.add_command(create_project_cmd)
 cli.add_command(load_project_cmd)
 cli.add_command(create_files_cmd)
+cli.add_command(create_matrix_cmd)
 cli.add_command(export_to_cmd)
 cli.add_command(make_families_cmd)
 cli.add_command(make_ssp_cmd)

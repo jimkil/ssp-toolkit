@@ -6,12 +6,16 @@ directory of this distribution and at https://github.com/CivicActions/ssp-toolki
 import csv
 from collections import OrderedDict
 from pathlib import Path
-from typing import Optional
+
+import click
+from loguru import logger
 
 from tools.helpers import ssptoolkit
+from tools.helpers.helpers import get_project_path
+from tools.logging_config import setup_logging  # noqa: F401
 
 
-def set_status(existing_status: str = "", component_status: str = "") -> Optional[str]:
+def set_status(existing_status: str = "", component_status: str = "") -> str | None:
     """
     Determine the status of a given control. If there isn't an existing status, set the status
     to the component_status. If one component has the status of "planned" set the status to
@@ -62,10 +66,6 @@ def create_rows(controls: dict, header: list) -> list:
     return rows
 
 
-# def get_status(control_id: str) -> str:
-#
-
-
 def get_component_data(
     control_id: str, control: dict, statuses: dict, header: list
 ) -> dict:
@@ -101,21 +101,23 @@ def sort_data(components: dict, header: list) -> dict:
 
 
 def write_file(rows: list):
-    output_to = Path("docs")
+    project_path = get_project_path()
+    output_to = project_path / "rendered" / "docs"
     if not output_to.is_dir():
         output_to.mkdir()
 
-    matrix = output_to.joinpath("responsibility_matrix.csv")
-    print(f"Writing file to {matrix}")
+    matrix = output_to / "responsibility_matrix.csv"
     header = list(rows[0])
     with matrix.open("w+") as fp:
         writer = csv.DictWriter(fp, fieldnames=header)
         writer.writeheader()
         writer.writerows(rows)
-    print("Write complete")
+    print("Wrote responsibility matrix to:", matrix)
+    logger.info(f"Wrote responsibility matrix to: {matrix}")
 
 
-def main():
+@click.command("create-matrix")
+def create_matrix_cmd():
     project = ssptoolkit.get_project()
     components = project.get_components()
     header: list = ["Control", "Status"] + [Path(c).name for c in components]
@@ -124,7 +126,3 @@ def main():
     controls = sort_data(components=component_data, header=header)
     rows = create_rows(controls=controls, header=header)
     write_file(rows=rows)
-
-
-if __name__ == "__main__":
-    main()
