@@ -108,7 +108,9 @@ def get_component_files(components: list) -> dict:
     component_files: dict = {}
     project_path = get_project_path()
     for component_file in components:
-        component = load_yaml_files(project_path / component_file / "component.yaml")
+        component = load_yaml_files(
+            project_path / "rendered" / component_file / "component.yaml"
+        )
         for family in component.get("satisfies", {}):
             component_file = project_path.joinpath(component_file, family)
             family_name = component_file.stem
