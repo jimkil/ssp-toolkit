@@ -13,12 +13,15 @@ from itertools import dropwhile, zip_longest
 from pathlib import Path
 
 import click
+from loguru import logger
 
 from tools.helpers import secrender
+from tools.helpers.helpers import get_project_path
 from tools.helpers.ssptoolkit import find_toc_tag, load_template_args
+from tools.logging_config import setup_logging  # noqa: F401
 
 
-@click.command()
+@click.command("create-files")
 @click.option(
     "--templates",
     "-t",
@@ -37,14 +40,15 @@ from tools.helpers.ssptoolkit import find_toc_tag, load_template_args
     required=False,
     help="Output directory (default: current directory)",
 )
-def main(templates: str, output_dir: str):
+def create_files_cmd(templates: str, output_dir: str):
+    project_path = get_project_path()
     template_args = load_template_args()
-    output_to = Path(output_dir)
-    template_dir = Path(templates)
+    output_to = project_path / output_dir
+    template_dir = project_path / templates
     if not output_to.is_dir():
         output_to.mkdir(parents=True, exist_ok=True)
 
-    template_path = Path(template_dir).rglob("*")
+    template_path = template_dir.rglob("*")
     template_files = [x for x in template_path if x.is_file()]
 
     for template in template_files:
@@ -60,6 +64,7 @@ def main(templates: str, output_dir: str):
 
         if not new_file.parent.is_dir():
             new_file.parent.mkdir(parents=True, exist_ok=True)
+        logger.info(f"Creating file: {new_file} from {template}")
         print(f"Creating file: {new_file} from {template}")
 
         secrender.secrender(
@@ -79,7 +84,3 @@ def rewrite(template_file: Path, template_dir: Path, output_dir: Path) -> str:
         )
     ]
     return str(output_dir / Path(*sub_path))
-
-
-if __name__ == "__main__":
-    main()

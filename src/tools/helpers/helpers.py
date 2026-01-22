@@ -1,11 +1,36 @@
+"""
+Copyright 2019-2024 CivicActions, Inc. See the README file at the top-level
+directory of this distribution and at https://github.com/CivicActions/ssp-toolkit#license.
+"""
+
 import hashlib
+import os
 from functools import lru_cache
 from pathlib import Path
 
+from dotenv import load_dotenv
 from loguru import logger
 from ruamel.yaml import YAML, YAMLError
 
 from tools.logging_config import setup_logging  # noqa: F401
+
+load_dotenv()
+
+
+def get_project_path() -> Path:
+    project_path_str = os.getenv("PROJECT_PATH")
+    if not project_path_str:
+        logger.error("PROJECT_PATH environment variable is not set.")
+        raise ValueError("PROJECT_PATH environment variable is not set.")
+
+    project_path = Path(project_path_str)
+    if not project_path.joinpath("opencontrol.yaml").exists():
+        logger.error(f"No opencontrol.yaml found in {project_path.as_posix()}.")
+        raise FileNotFoundError(
+            f"No opencontrol.yaml found in {project_path.as_posix()}."
+        )
+
+    return project_path
 
 
 @lru_cache(maxsize=128)

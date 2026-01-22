@@ -18,7 +18,7 @@ from tools.logging_config import setup_logging  # noqa: F401
 )
 def load_project_cmd(project_path: str) -> None:
     """
-    Load an existing project by setting the BASE_PATH in the .env file.
+    Load an existing project by setting the PROJECT_PATH in the .env file.
 
     :param project_path: the path to an existing project
     """
@@ -28,9 +28,9 @@ def load_project_cmd(project_path: str) -> None:
         logger.error(f"Project {project_path} does not exist. Project not loaded.")
         raise click.ClickException("Project path does not exist. Project not loaded.")
 
-    set_key(Path.cwd() / ".env", "BASE_PATH", project_path)
+    set_key(Path.cwd() / ".env", "PROJECT_PATH", project_path)
     logger.info(f"Project path: {project_path}")
-    click.echo(f"Set BASE_PATH to {project_path} in .env file")
+    click.echo(f"Set PROJECT_PATH to {project_path} in .env file")
 
     project_file = load_yaml_files(file_path=open_control)
     click.echo(f"Project {project_file.get('name', 'DEFAULT')} loaded successfully.")

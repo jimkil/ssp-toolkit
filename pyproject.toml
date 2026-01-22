@@ -46,7 +46,7 @@ Source = "https://github.com/CivicActions/ssp-toolkit"
 
 [project.scripts]
 cli = "tools.cli:cli"
-createfiles = "src.tools.createfiles.createfiles:main"
+createfiles = "tools.create_files:create_files_cmd"
 creatematrix = "src.tools.creatematrix.creatematrix:main"
 createproject = "tools.create_project:create_project_cmd"
 loadproject = "tools.load_project:load_project_cmd"

@@ -12,9 +12,8 @@ import yaml
 
 from tools.helpers import secrender
 from tools.helpers.config import Config
+from tools.helpers.helpers import get_project_path
 from tools.helpers.opencontrol import OpenControl
-
-config = Config()
 
 
 class ControlRegExps:
@@ -45,7 +44,8 @@ def to_oc_control_id(control_id: str) -> str:
 
 
 def get_project() -> OpenControl:
-    oc_file = Path("opencontrol").with_suffix(".yaml")
+    project_path = get_project_path()
+    oc_file = project_path.joinpath("opencontrol").with_suffix(".yaml")
     if oc_file.is_file():
         project = OpenControl.load(oc_file.as_posix())
     else:
@@ -138,10 +138,12 @@ def load_controls_by_id(component_list: list) -> dict:
 
 
 def load_template_args() -> dict:
+    config = Config()
     return secrender.get_template_args(yaml=config.config, set_={}, root="")
 
 
 def get_control_statuses() -> dict:
+    config = Config()
     statuses = config.config.get("status", {})
     return statuses
 
@@ -161,15 +163,3 @@ def write_toc(file: str | Path, levels: int):
         string=toc,
         marker="<!--TOC-->",
     )
-
-
-def load_yaml_files(file_path: str | Path) -> dict:
-    load_file = Path(file_path) if isinstance(file_path, str) else file_path
-    try:
-        with open(load_file, "r") as fp:
-            project = yaml.safe_load(fp)
-            return project
-    except FileNotFoundError:
-        raise FileNotFoundError(
-            f"No {load_file.name} found in {load_file.parent.as_posix()}."
-        )

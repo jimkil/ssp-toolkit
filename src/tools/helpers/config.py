@@ -1,14 +1,18 @@
-from pathlib import Path
+"""
+Copyright 2019-2024 CivicActions, Inc. See the README file at the top-level
+directory of this distribution and at https://github.com/CivicActions/ssp-toolkit#license.
+"""
 
 import click
 import yaml
 
+from tools.helpers.helpers import get_project_path, load_yaml_files
+
 
 class Config:
     config: dict
-    configuration: Path = Path("configuration.yaml")
-    keys: Path = Path("keys")
-    config_files: list[()] = []
+    keys: dict
+    config_files: list[tuple[str, str]] = []
     default_keys: dict = {
         "artifacts.yaml": "artifact",
         "config-management.yaml": "cm",
@@ -17,22 +21,20 @@ class Config:
     }
 
     def __init__(self):
-        if self.configuration.exists():
-            try:
-                with open(self.configuration, "r") as fp:
-                    self.config = yaml.safe_load(fp)
-            except IOError:
-                print(f"Error loading {self.configuration.as_posix}.")
+        self.project_path = get_project_path()
+        if self.project_path.joinpath("configuration.yaml").exists():
+            self.config = load_yaml_files(
+                self.project_path.joinpath("configuration.yaml")
+            )
         else:
             raise FileNotFoundError("configuration.yaml not found in project root.")
         self.load_keys()
 
     def load_keys(self):
-        for filename in self.keys.glob("*.yaml"):
+        for filename in self.project_path.joinpath("keys").glob("*.yaml"):
             key = self.default_keys.get(filename.name, filename.stem)
             self.config_files.append((filename.name, key))
-            with open(filename, "r") as fp:
-                self.config[key] = yaml.safe_load(fp)
+            self.config[key] = load_yaml_files(file_path=filename)
 
     def check_config_values(self, file: str, key: str = "") -> str | dict:
         if key:

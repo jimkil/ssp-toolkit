@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import Generator
 
-from complianceio.opencontrol import OpenControl
-
-from tools.helpers.ssptoolkit import get_project, load_yaml_files, sortable_control_id
+from tools.helpers.helpers import load_yaml_files
+from tools.helpers.opencontrol import OpenControl
+from tools.helpers.ssptoolkit import get_project, sortable_control_id
 
 
 class Project:
