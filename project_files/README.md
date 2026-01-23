@@ -39,7 +39,7 @@ directly as a System Security Plan without agency-specific review
 - [Create Files](documentation/create-files.md)
 - [Create Matrix](documentation/create-matrix.md)
 - [Export To](documentation/export-to.md)
-- [Keys](documentation/keys.md)
+- [Keys](documentation/keys_and_templating.md)
 - [Make Families](documentation/make-families.md)
 - [Make SSP](documentation/make-ssp.md)
 - [SOP](documentation/sop.md)
