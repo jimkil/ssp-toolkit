@@ -116,7 +116,11 @@ def check_new_project_location(new_project_directory: Path) -> None:
 def create_project_cmd(project_name: str, projects_directory: str) -> None:
     """
     Create a new project directory with the given name.
+
+    :param project_name: Name of the new project
+    :param projects_directory: Directory to create the new project in
     """
+
     project_path = Path(projects_directory) / project_name.replace(" ", "_").lower()
     check_new_project_location(new_project_directory=project_path)
     copy_project_files(new_project_directory=project_path)

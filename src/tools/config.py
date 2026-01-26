@@ -5,8 +5,10 @@ directory of this distribution and at https://github.com/CivicActions/ssp-toolki
 
 import click
 import yaml
+from loguru import logger
 
 from tools.helpers.helpers import get_project_path, load_yaml_files
+from tools.logging_config import setup_logging  # noqa: F401
 
 
 class Config:
@@ -27,6 +29,7 @@ class Config:
                 self.project_path.joinpath("configuration.yaml")
             )
         else:
+            logger.error("configuration.yaml not found in project root.")
             raise FileNotFoundError("configuration.yaml not found in project root.")
         self.load_keys()
 
@@ -45,12 +48,12 @@ class Config:
 
 
 @click.group()
-@click.pass_context
-def check_config(ctx):
-    ctx.obj = Config()
+def check_config():
+    """Check configuration files and keys in the project"""
+    pass
 
 
-@check_config.command()
+@check_config.command("get-value")
 @click.option(
     "--file",
     "-f",
@@ -62,25 +65,17 @@ def check_config(ctx):
     required=False,
     help="The name of the configuration key whose value should be shown.",
 )
-@click.pass_context
-def get_value(ctx, file: str, key: str = ""):
-    config = ctx.obj
-    if key:
-        click.echo(config.check_config_values(file, key))
-    else:
-        click.echo(yaml.dump(config.check_config_values(file), indent=4, width=80))
+def get_value(file: str, key: str = ""):
+    """Get the value of a specific configuration key from a file"""
+    config = Config()
+    yaml.dump(config.check_config_values(file), indent=4, width=80)
 
 
-@check_config.command()
-@click.pass_context
-def list_files(ctx):
+@check_config.command("list-files")
+def list_files():
     """List all the files loaded from the keys directory"""
-    config = ctx.obj
+    config = Config()
     click.echo("Key files and configuration keys:")
     click.echo("---------------------------------")
     for files in config.config_files:
         click.echo(f"{files[0]} using alias {files[1]}")
-
-
-if __name__ == "__main__":
-    check_config()

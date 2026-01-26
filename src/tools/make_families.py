@@ -150,6 +150,7 @@ def create_family(
 
 @click.command("make-families")
 def make_families_cmd():
+    """Create control family files from project data."""
     project = Project()
     project_path = get_project_path()
     controls_dir = project_path.joinpath("rendered/docs/controls")

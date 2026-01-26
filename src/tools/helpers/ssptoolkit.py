@@ -11,8 +11,8 @@ import md_toc
 import yaml
 from loguru import logger
 
+from tools.config import Config
 from tools.helpers import secrender
-from tools.helpers.config import Config
 from tools.helpers.helpers import get_project_path, load_yaml_files
 from tools.helpers.opencontrol import OpenControl
 from tools.logging_config import setup_logging  # noqa: F401

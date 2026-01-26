@@ -230,6 +230,7 @@ def sort_controls(families: dict) -> dict:
 
 @click.command("sop")
 def sop_cmd():
+    """Generate Standard Operating Procedure (SOP) Markdown files from rendered"""
     hashes = FileChecker()
     project_path = get_project_path()
     out_dir = project_path / "rendered" / "sop"

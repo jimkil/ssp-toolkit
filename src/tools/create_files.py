@@ -32,6 +32,11 @@ from tools.logging_config import setup_logging  # noqa: F401
     help="Template directory",
 )
 def create_files_cmd(templates: str):
+    """
+    Render files from templates using secrender.
+
+    :param templates: Path to the template directory
+    """
     project_path = get_project_path()
     template_args = load_template_args()
     output_to = project_path / "rendered"

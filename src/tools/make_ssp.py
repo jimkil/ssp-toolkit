@@ -86,6 +86,7 @@ def write_ssp(ssp_data: Ssp, write_to: Path, project: OpenControl):
 
 @click.command("make-ssp")
 def make_ssp_cmd():
+    """Generate a System Security Plan (SSP) from the control families."""
     project_path = get_project_path()
     project = Project()
     write_to = project_path / "rendered" / "docs"

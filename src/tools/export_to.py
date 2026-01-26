@@ -59,6 +59,13 @@ def render_file(to_render: Path, file_type: str, output_to: Path, project_path: 
     help="The file type to create using Pandoc (default: docx)",
 )
 def export_to_cmd(to_render: str, file_type: str):
+    """
+    Export Markdown files to other formats using Pandoc.
+
+    :param to_render: Path to the Markdown file
+    :param file_type: The file type to create using Pandoc (default: docx)
+    """
+
     project_path = get_project_path()
 
     output_to = project_path / "rendered" / "docx"

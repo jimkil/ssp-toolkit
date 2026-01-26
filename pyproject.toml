@@ -54,7 +54,7 @@ exportto = "tools.export_to:export_to_cmd"
 makefamilies = "tools.makefamilies:make_families_cmd"
 sop = "tools.sop:sop_cmd"
 makessp = "tools.make_ssp:make_ssp_cmd"
-getconfig = "tools.helpers.config:check_config"
+check-config = "tools.config:check_config"
 
 [tool.mypy.overrides]
 module = "yaml"

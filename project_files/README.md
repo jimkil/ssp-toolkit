@@ -22,15 +22,18 @@ A current version can be viewed in Git Markdown from this repository:
 
 ## Table of Contents
 
+- [OpenControl and Project Setup](documentation/opencontrol.md)
 - [Components](documentation/components.md)
-- [Create Files](documentation/create-files.md)
-- [Create Matrix](documentation/create-matrix.md)
-- [Export To](documentation/export-to.md)
-- [Keys](documentation/keys_and_templating.md)
-- [Make Families](documentation/make-families.md)
-- [Make SSP](documentation/make-ssp.md)
-- [SOP](documentation/sop.md)
-- [Templates](documentation/templates.md)
+- [Keys and Templates](documentation/keys_and_templating.md)
+- [Command Line Interface (CLI)](documentation/cli.md)
+- [Creating and Loading Projects](documentation/projects.md)
+- [Create Files Command](documentation/create-files.md)
+- [Make Families Command](documentation/make-families.md)
+- [Export To Command](documentation/export-to.md)
+- [Make SSP Command](documentation/make-ssp.md)
+- [SOP Command](documentation/sop.md)
+- [Create Matrix Command](documentation/create-matrix.md)
+- [Config Command](documentation/config.md)
 
 ## License
 

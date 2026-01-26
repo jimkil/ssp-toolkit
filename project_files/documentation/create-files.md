@@ -1,22 +1,22 @@
-# create-files
+# create-files command
 
-***Commands are run within the SSP Toolkit root directory.***
+Create/update the frontmatter, components and appendices using `templates` and `keys` found in the
+project directory:
 
-The `create-files` command is used to generate files from the templates. The command takes
-one optional argument, which is the name of the template, or directory of templates, to
-render. If no argument is provided, all templates in the templates directory will be rendered.
-The templates are rendered to the `/rendered` directory and maintain the same directory structure
-as the templates. So, if a template is located in `/templates/appendices/`, the rendered file will
-be written to `/rendered/appendices/`.
+#### Example
 
-## Usage
-
-```bash
-uv run cli create-files --templates templates/appendices/
+```shell
+uv run cli create-files -t templates
 ```
 
-```bash
-Usage: cli create-files [OPTIONS]
+This command will read the templates from the `templates/` directory in the project path and the key files from the
+`keys/` directory in the project path, and create files in the projects `rendered/` directory. Inside the `rendered/`
+directory the files will maintain the same structure as the `templates/` directory.
+
+#### Usage
+
+```shell
+Usage: create-files [OPTIONS]
 
 Options:
   -t, --templates DIRECTORY  Template directory

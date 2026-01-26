@@ -118,6 +118,7 @@ def write_file(rows: list):
 
 @click.command("create-matrix")
 def create_matrix_cmd():
+    """Create a responsibility matrix for the SSP components."""
     project = ssptoolkit.get_project()
     components = project.get_components()
     header: list = ["Control", "Status"] + [Path(c).name for c in components]
