@@ -18,19 +18,11 @@
 
 ## Overview
 
-This repository contains documents and scripts that can be used to create and maintain a System Security Plan (SSP) as required by the [Risk Management Framework (RMF) version 1](https://csrc.nist.gov/publications/detail/sp/800-37/rev-1/archive/2014-06-05). Included are examples of SSP "front matter", control implementation statements (as defined in [NIST SP 800-53r4](https://nvd.nist.gov/800-53/Rev4/) along with the Privacy Overlay), and a collection of appendices.
-
-We understand that version 2 of the [Risk Management Framework for Information Systems and Organizations: A System Life Cycle Approach for Security and Privacy (RMFv2)](https://csrc.nist.gov/publications/detail/sp/800-37/rev-2/final) has been released, and we are planning to update this repository to include the controls as defined in [NIST SP 800-53r5 (draft)](https://csrc.nist.gov/publications/detail/sp/800-53/rev-5/draft) as this is finalized.
+This repository contains documents and scripts that can be used to create and maintain a System Security Plan (SSP) as
+required by the [Risk Management Framework (RMF) version 1](https://csrc.nist.gov/publications/detail/sp/800-37/rev-1/archive/2014-06-05). Included are examples of SSP "front matter", control implementation statements (as defined in [NIST SP 800-53r4](https://nvd.nist.gov/800-53/Rev4/) along with the Privacy Overlay), and a collection of appendices.
 
 Control templates are in machine-readable ([OpenControl](https://github.com/opencontrol/)) YAML files. The intention is to enable these files to be updated automatically by gathering evidence on the state of the running system.
 
-### System Security Plan sections
-
-A current version can be viewed in Git Markdown from this repository:
-
-* [Front matter](frontmatter) (points of contact, system and technical description, ...)
-* [Control implementation statements](docs/controls.md)
-* [Appendices](appendices) (incident response, configuration management, regulations, ...)
 
 ## Disclaimer
 
@@ -40,46 +32,128 @@ directly as a System Security Plan without agency-specific review
 
 ## Prerequisites
 
-You will need [Python Poetry](https://python-poetry.org/docs/) to run the
-SSP Toolkit in a Python virtual environment. Once you have Poetry
-installed you will be able to run all the commands using the
-format `poetry run [COMMAND]`.
+You will need the [uv](https://docs.astral.sh/uv/) package manager to run the SSP Toolkit in uv virtual environment.
+Once you have uv installed you will be able to run all the commands using the format
+`uv run cli [COMMAND]`.
 
-To install all the Python dependencies, run `poetry install`.
-
+To install all the Python dependencies, run `uv sync`.
 
 ## Generating the documentation
 
 To update the local Markdown and or to create new exportable files, perform the following steps:
 
-### createfiles
+## cli commands
 
-Create/update the frontmatter, components and appendices using [templates](templates) and [keys](keys)
+The SSP-Toolkit uses [Click](https://click.palletsprojects.com/) to provide a command line interface (CLI) for generating and managing the SSP documentation. The CLI commands are run using the `uv run cli [COMMAND]` format.
+The available commands are:
+
+```shell
+Usage: cli [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  create-files
+  create-matrix
+  create-project  Create a new project directory with the given name.
+  export-to
+  load-project    Load an existing project by setting the PROJECT_PATH in...
+  make-families
+  make-ssp
+  sop
+```
+
+## Creating a new project
+
+To create a new project directory with the SSP-Toolkit structure, run the following command:
+
+```shell
+uv run cli create-project -n [PROJECT_NAME] -d [DIRECTORY]
+```
+
+This will create a new project within the directory indicated by the `-d` parameter. The project
+cannot live within the SSP-Toolkit directory itself. The new project directory will contain all
+the templates and files required to generate the SSP documentation. Once a project is created,
+you can update the `keys/` directory with your project-specific information and update the templates
+and components as required.
+
+Projects should be kept in their own version control repository to track changes over time. Only files
+specific to the project should be kept in version control; the SSP-Toolkit itself should not be copied
+into the project repository.
+
+### Usage
+
+```shell
+Usage: cli create-project [OPTIONS]
+
+  Create a new project directory with the given name.
+
+Options:
+  -n, --name TEXT       Name of the new project  [required]
+  -d, --directory TEXT  Directory to create the new project in (default:
+                        current directory)  [required]
+  --help                Show this message and exit.
+```
+
+## Loading a project
+
+To load an existing project, run the following command:
+
+```shell
+uv run cli load-project -p [PROJECT_PATH]
+```
+
+Loading a project will set the `PROJECT_PATH` variable in the `.env` file to the path specified
+by the `-p` parameter. This will allow all subsequent commands to run within the context of
+the specified project.
+
+### Usage
+
+```shell
+Usage: cli load-project [OPTIONS]
+
+  Load an existing project by setting the PROJECT_PATH in the .env file.
+
+  :param project_path: the path to an existing project
+
+Options:
+  -p, --path TEXT  The path to an existing project  [required]
+  --help           Show this message and exit.
+```
+
+### create-files
+
+Create/update the frontmatter, components and appendices using `templates` and `keys` found in the
+project directory:
 
 #### Example
 
 ```shell
-poetry run createfiles -t templates
+uv run cli create-files -t templates
 ```
+
+This command will read the templates from the `templates/` directory in the project path and the key files from the
+`keys/` directory in the project path, and create files in the projects `rendered/` directory. Inside the `rendered/`
+directory the files will maintain the same structure as the `templates/` directory.
 
 #### Usage
 
 ```shell
-Usage: createfiles [OPTIONS]
+Usage: create-files [OPTIONS]
 
 Options:
   -t, --templates DIRECTORY  Template directory
-  -o, --out PATH             Output directory (default: current directory)
   --help                     Show this message and exit.
 ```
 
-### makefamilies
+### make-families
 
-Generate markdown versions of the RMF control implementation family files in the `docs/controls/` directory:
+Generate Markdown versions of the RMF control implementation family files in the `docs/controls/` directory:
 
 #### Example
 ```shell
-poetry run makefamilies
+uv run cli make-families
 ```
 
 ### sop
@@ -88,70 +162,90 @@ Generate Standard Operating Procedure (SOP) docs (from `components/` and `keys/s
 
 #### Example
 ```shell
-poetry run sop -c components
+uv run cli sop -c components
 ```
 
 #### Usage
 ```shell
-Usage: sop [OPTIONS]
+Usage: cli sop [OPTIONS]
 
 Options:
-  -c, --components DIRECTORY  Rendered components directory
-  -o, --out PATH              Output directory (default: docs/)
-  --help                      Show this message and exit.
+  --help  Show this message and exit.
 
 ```
 
-### makessp
+### make-ssp
 
 Generate System Security Plan (SSP)
 
 #### Example
 ```shell
-poetry run makessp
+uv run cli make-ssp
 ```
 
-### exportto
+#### Usage
+
+```shell
+Usage: cli make-ssp [OPTIONS]
+
+Options:
+  --help  Show this message and exit.
+```
+
+### export-to
 
 Generate Microsoft Word (.docx) versions of the control family, appendices, and frontmatter files
 (see the `docx/` directory):
 
 `exportto` uses the Pandoc file generation library. Go to the
 [install Pandoc](https://pandoc.org/installing.html) page to learn how to install Pandoc locally.
+On macOS you can use Homebrew:
+
+```shell
+brew install pandoc
+```
 
 #### Example
 ```shell
-poetry run exportto -c docs/controls
+uv run cli export-to -c docs/controls
 ```
 
 #### Usage
 ```shell
-Usage: exportto [OPTIONS]
+Usage: export-to [OPTIONS]
 
 Options:
-  -r, --render_file PATH  The directory containing the files, or a file, to
+  -r, --render PATH  The directory containing the files, or a file, to
                           render.
   -t, --type TEXT         The file type to create using Pandoc (default: docx)
   -o, --out PATH          Output directory (default: docx)
   --help                  Show this message and exit.
 ```
 
-### creatematrix
+### create-matrix
 
 Generate a spreadsheet showing which, if any, components are responsible
 for addressing a given control.
 
 #### Example
 ```shell
-poetry run creatematrix
+uv run cli creatematrix
 ```
 
-### getconfig
+#### Usage
+```shell
+Usage: cli create-matrix [OPTIONS]
+
+Options:
+  --help  Show this message and exit.
+```
+
+## getconfig
 
 The `getconfig` command lets you read configuration data. There are two commands
 that can be used with `getconfig`; `get-value` and `list-files`.
 
-#### Usage
+### Usage
 ```shell
 Usage: getconfig [OPTIONS] COMMAND [ARGS]...
 
@@ -163,27 +257,27 @@ Commands:
   list-files
 ```
 
-#### get-value
+### get-value
 
 `get-value` is used to get the value of a given key in the configuration dictionary.
 For instance if you wanted to know the value of the `name_short` parameter in the
-`Contractor` key file, you would run `poetry run getconfig get-value -f contractor -k name_short`.
-If you omit the `--key/-k` parameter, for instance `poetry run getconfig get-value -f contractor`
+`Contractor` key file, you would run `uv run cli getconfig get-value -f contractor -k name_short`.
+If you omit the `--key/-k` parameter, for instance `uv run cli getconfig get-value -f contractor`
 this will output the entire contents of the key file formatted as YAML.
 
 #### Example
 
 Get a value for a given key in the `contractor.yaml` file:
 ```shell
-poetry run getconfig get-value -f contractor -k name_short
+uv run cli getconfig get-value -f contractor -k name_short
 ```
 
 Get the entire contents of the `contractor.yaml` file
 ```shell
-poetry run getconfig get-value -f contractor
+uv run cli getconfig get-value -f contractor
 ```
 
-##### Usage
+#### Usage
 ```shell
 Usage: getconfig get-value [OPTIONS]
 
@@ -194,7 +288,7 @@ Options:
   --help           Show this message and exit.
 ```
 
-#### list-files
+### list-files
 
 The `list-files` command will list all the files loaded from the keys directory.
 Most files are keyed using in the filename, for instance the values in the `contractor.yaml`
@@ -203,13 +297,13 @@ files have aliases which are used for their key, for instance `configuration-man
 is aliased to `cm`, so would be available as `{{ cm.some_variable }}`. `list-files` will show a
 list of the files and their alias.
 
-##### Example
+#### Example
 
 ```shell
-poetry run getconfig list-files
+uv run cli getconfig list-files
 ```
 
-##### Usage
+#### Usage
 
 ```shell
 Usage: getconfig list-files [OPTIONS]
@@ -220,7 +314,7 @@ Options:
   --help  Show this message and exit.
 ```
 
-##### Example results
+#### Example results
 
 ```shell
 Key files and configuration keys:
