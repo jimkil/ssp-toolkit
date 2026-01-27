@@ -11,6 +11,8 @@ uv run cli sop -c components
 ```shell
 Usage: cli sop [OPTIONS]
 
+  Generate Standard Operating Procedure (SOP) Markdown files from rendered
+
 Options:
   --help  Show this message and exit.
 ```

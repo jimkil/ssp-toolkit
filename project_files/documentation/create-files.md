@@ -18,6 +18,10 @@ directory the files will maintain the same structure as the `templates/` directo
 ```shell
 Usage: create-files [OPTIONS]
 
+  Render files from templates using secrender.
+
+  :param templates: Path to the template directory
+
 Options:
   -t, --templates DIRECTORY  Template directory
   --help                     Show this message and exit.

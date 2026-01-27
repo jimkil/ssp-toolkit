@@ -12,6 +12,8 @@ uv run cli make-ssp
 ```shell
 Usage: cli make-ssp [OPTIONS]
 
+  Generate a System Security Plan (SSP) from the control families.
+
 Options:
   --help  Show this message and exit.
 ```

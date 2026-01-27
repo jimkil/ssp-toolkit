@@ -23,6 +23,11 @@ uv run cli export-to --render [PATH TO MARKDOWN FILE OR DIRECTORY] --type pdf
 ```shell
 Usage: cli export-to [OPTIONS]
 
+  Export Markdown files to other formats using Pandoc.
+
+  :param to_render: Path to the Markdown file :param file_type: The file type
+  to create using Pandoc (default: docx)
+
 Options:
   -r, --render PATH  The directory containing the files, or a file, to render.
   -t, --type TEXT    The file type to create using Pandoc (default: docx)

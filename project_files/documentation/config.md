@@ -4,6 +4,7 @@ The `check-config` commands lets you read configuration data. There are two comm
 that can be used with `getconfig`; `get-value` and `list-files`.
 
 ### Usage
+
 ```shell
 Usage: check-config [OPTIONS] COMMAND [ARGS]...
 
@@ -17,7 +18,7 @@ Commands:
   list-files  List all the files loaded from the keys directory
 ```
 
-### get-value
+### get-value command
 
 `get-value` is used to get the value of a given key in the configuration dictionary.
 For instance if you wanted to know the value of the `name_short` parameter in the
@@ -28,18 +29,23 @@ this will output the entire contents of the key file formatted as YAML.
 #### Example
 
 Get a value for a given key in the `contractor.yaml` file:
+
 ```shell
 uv run cli getconfig get-value -f contractor -k name_short
 ```
 
 Get the entire contents of the `contractor.yaml` file
+
 ```shell
 uv run cli getconfig get-value -f contractor
 ```
 
 #### Usage
+
 ```shell
 Usage: getconfig get-value [OPTIONS]
+
+  Get the value of a specific configuration key from a file
 
 Options:
   -f, --file TEXT  [required]
@@ -48,7 +54,7 @@ Options:
   --help           Show this message and exit.
 ```
 
-### list-files
+### list-files command
 
 The `list-files` command will list all the files loaded from the keys directory.
 Most files are keyed using in the filename, for instance the values in the `contractor.yaml`
